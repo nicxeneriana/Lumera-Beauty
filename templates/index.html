@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Luméra Beauty — Temukan Produk Kecantikan Favoritmu{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-6 pt-12">
+
+    <div class="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-primary-50 via-white to-primary-100/60 px-10 md:px-16 py-16">
+
+        <!-- Background Blur -->
+        <div class="absolute -top-20 -right-20 w-96 h-96 bg-primary-300/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary-200/30 rounded-full blur-3xl"></div>
+
+        <div class="relative grid md:grid-cols-2 gap-12 items-center">
+
+            <!-- Left -->
+            <div>
+
+                <span class="inline-flex px-4 py-2 rounded-full bg-white shadow text-primary-600 text-sm font-medium">
+                    ✨ Beauty Marketplace
+                </span>
+
+                <h1 class="mt-6 font-display font-bold text-5xl md:text-6xl leading-tight">
+                    Temukan Produk
+                    <br>
+                    <span class="text-primary-600">Kecantikan</span>
+                    Favoritmu
+                </h1>
+
+                <p class="mt-6 text-lg text-ink/60 max-w-lg">
+                    Cari skincare dan makeup favoritmu.
+                    Cek stok serta harga secara real-time sebelum datang ke toko.
+                </p>
+
+                <div class="flex gap-4 mt-8">
+
+                    <a href="{{ url_for('products') }}"
+                       class="px-8 py-3 rounded-full bg-primary-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1 transition">
+                        Cek Sekarang
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- Right -->
+            <div class="relative h-[430px] hidden md:block">
+
+                <!-- Glow -->
+                <div class="absolute inset-0 rounded-full bg-primary-200/30 blur-3xl scale-90"></div>
+
+                <!-- Produk -->
+                <div class="absolute right-0 bottom-0 z-20">
+
+                    <img
+                        src="{{ url_for('static', filename='uploads/hero.png') }}"
+                        alt="Lumera Beauty"
+                        class="w-[650px] object-contain drop-shadow-2xl">
+
+                </div>
+
+
+                <!-- Decoration -->
+                <div class="absolute top-12 right-16 w-6 h-6 rounded-full bg-primary-300"></div>
+                <div class="absolute bottom-20 left-12 w-10 h-10 rounded-full bg-primary-200 opacity-60"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="max-w-7xl mx-auto px-6 mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+  {% set features = [
+    ('Informasi Real-Time', 'Data produk, harga, dan stok diperbarui setiap saat.'),
+    ('Hemat Waktu & Biaya', 'Cek produk sebelum ke toko, lebih efisien dalam praktis.'),
+    ('Produk Original', 'Kami menyediakan produk original dan terpercaya.'),
+    ('Belanja Lebih Mudah', 'Cari, pilih, dan simpan produk favorit dengan mudah.'),
+  ] %}
+  {% for title, desc in features %}
+    <div class="border border-primary-100 rounded-2xl p-5 flex gap-3 items-start">
+      <div class="w-10 h-10 shrink-0 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div>
+        <div class="font-medium text-sm">{{ title }}</div>
+        <div class="text-xs text-ink/50 mt-1">{{ desc }}</div>
+      </div>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="max-w-7xl mx-auto px-6 mt-14 mb-20">
+  <div class="flex items-center justify-between mb-5">
+    <h2 class="font-display font-600 text-xl">Produk Terbaru</h2>
+    <a href="{{ url_for('products') }}" class="text-sm text-primary-600 hover:underline flex items-center gap-1">
+      Lihat Semua
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+    {% for p in products %}
+      <a href="{{ url_for('product_detail', product_id=p.id) }}" class="group block rounded-2xl border border-primary-100 overflow-hidden hover:shadow-lg transition relative">
+        {% if p.is_new %}
+          <span class="absolute top-3 left-3 z-10 bg-primary-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full">Baru</span>
+        {% endif %}
+      <div class="p-3 relative">
+          {% if p.stock == 0 %}
+              <div class="absolute inset-0 z-10 flex items-center justify-center">
+                  <span class="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                      Stok Habis
+                  </span>
+              </div>
+
+          {% elif p.stock < 5 %}
+              <div class="absolute top-3 left-3 z-10">
+                  <span class="bg-yellow-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                      Stok Hampir Habis
+                  </span>
+              </div>
+          {% endif %}
+          
+          {% if p.image %}
+            <div class="aspect-square bg-white rounded-xl border border-primary-100 flex items-center justify-center overflow-hidden">
+              <img src="{{ url_for('static', filename='uploads/' + p.image) }}"
+                  alt="{{ p.name }}"
+                  class="max-w-full max-h-full object-contain transition duration-300 group-hover:scale-105">
+            </div>
+          {% else %}
+            <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+              Tidak ada gambar
+            </div>
+          {% endif %}
+        </div>
+        <div class="px-4 pb-4">
+          <div class="text-xs text-ink/40">
+              {{ p.brand_name }}
+          </div>
+
+          <div class="text-sm font-medium mt-0.5 line-clamp-2 group-hover:text-primary-600">
+              {{ p.name }}
+          </div>
+
+          <div class="text-sm font-semibold text-primary-600 mt-1">
+              {{ p.price|rupiah }}
+          </div>
+
+          <!-- Status Stock + Jumlah Stock -->
+          <div class="mt-2 flex items-center gap-2">
+
+              {% if p.stock == 0 %}
+
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">
+                      Stok Habis
+                  </span>
+
+                  <span class="text-xs text-ink/50">
+                      0 pcs
+                  </span>
+
+
+              {% elif p.stock < 5 %}
+
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-600">
+                      Stok Hampir Habis
+                  </span>
+
+                  <span class="text-xs text-ink/50">
+                      {{ p.stock }} pcs
+                  </span>
+
+
+              {% else %}
+
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-600">
+                      Stok Tersedia
+                  </span>
+
+                  <span class="text-xs text-ink/50">
+                      {{ p.stock }} pcs
+                  </span>
+
+              {% endif %}
+
+          </div>
+
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

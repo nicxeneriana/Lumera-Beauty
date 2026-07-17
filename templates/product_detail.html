@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}{{ product.name }} — Luméra Beauty{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <div class="text-xs text-ink/40 mb-6">
+    <a href="{{ url_for('index') }}" class="hover:text-primary-600">Beranda</a> /
+    <a href="{{ url_for('products', kategori=product.category_name) }}" class="hover:text-primary-600">{{ product.category_name }}</a> /
+    {{ product.name }}
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-10">
+    <div>
+      {% if product.image %}
+      <div class="w-full h-96 bg-white rounded-2xl border border-primary-100 flex items-center justify-center overflow-hidden">
+          <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+              alt="{{ product.name }}"
+              class="max-w-full max-h-full object-contain">
+      </div>
+      {% else %}
+          <div class="w-full h-96 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400">
+              Tidak ada gambar
+          </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="text-xs text-primary-600 font-medium uppercase tracking-wide">{{ product.brand_name }}</div>
+      <h1 class="font-display font-600 text-2xl mt-1">{{ product.name }}</h1>
+      <div class="text-2xl font-semibold text-primary-600 mt-3">{{ product.price|rupiah }}</div>
+      <div class="mt-2 flex items-center gap-2">
+
+          {% if product.stock == 0 %}
+
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">
+                  Stok Habis
+              </span>
+
+              <span class="text-xs text-ink/50">
+                  0 pcs
+              </span>
+
+
+          {% elif product.stock < 5 %}
+
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-600">
+                  Stok Hampir Habis
+              </span>
+
+              <span class="text-xs text-ink/50">
+                  {{ product.stock }} pcs
+              </span>
+
+
+          {% else %}
+
+              <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-600">
+                  Stok Tersedia
+              </span>
+
+              <span class="text-xs text-ink/50">
+                  {{ product.stock }} pcs
+              </span>
+
+          {% endif %}
+
+      </div>
+
+      <p class="text-sm text-ink/60 mt-4 leading-relaxed">{{ product.description }}</p>
+      {% if product.volume %}
+        <div class="text-sm text-ink/50 mt-3">Isi: {{ product.volume }}</div>
+      {% endif %}
+
+      <div class="grid grid-cols-3 gap-3 mt-8">
+        {% set badges = [
+          ('100% Original', 'Produk asli & terjamin'),
+          ('Harga Terbaik', 'Harga bersaing setiap hari'),
+          ('Update Real-Time', 'Stok & harga terkini'),
+        ] %}
+        {% for title, desc in badges %}
+          <div class="border border-primary-100 rounded-xl p-3 text-center">
+            <div class="text-xs font-medium">{{ title }}</div>
+            <div class="text-[10px] text-ink/40 mt-1">{{ desc }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% if related %}
+  <div class="mt-16">
+    <h2 class="font-display font-600 text-xl mb-5">Produk Terkait</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+      {% for p in related %}
+        <a href="{{ url_for('product_detail', product_id=p.id) }}" class="group block rounded-2xl border border-primary-100 overflow-hidden hover:shadow-lg transition">
+            <div class="p-3">
+              {% if p.image %}
+                  <div class="aspect-square bg-white rounded-xl border border-primary-100 flex items-center justify-center overflow-hidden">
+                      <img src="{{ url_for('static', filename='uploads/' + p.image) }}"
+                          alt="{{ p.name }}"
+                          class="max-w-full max-h-full object-contain transition duration-300 group-hover:scale-105">
+                  </div>
+              {% else %}
+                  <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                      Tidak ada gambar
+                  </div>
+              {% endif %}
+            </div>
+            <div class="px-4 pb-4">
+            <div class="text-xs text-ink/40">{{ p.brand_name }}</div>
+            <div class="text-sm font-medium mt-0.5 line-clamp-2 group-hover:text-primary-600">{{ p.name }}</div>
+            <div class="text-sm font-semibold text-primary-600 mt-1">{{ p.price|rupiah }}</div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  function qtyStep(delta) {
+    const el = document.getElementById('qty');
+    let v = parseInt(el.textContent) + delta;
+    if (v < 1) v = 1;
+    el.textContent = v;
+  }
+</script>
+{% endblock %}

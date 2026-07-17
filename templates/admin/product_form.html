@@ -1,0 +1,91 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Edit' if product else 'Tambah' }} Produk — Admin Luméra Beauty{% endblock %}
+{% block page_title %}{{ 'Edit Produk' if product else 'Tambah Produk' }}{% endblock %}
+
+{% block admin_content %}
+<div class="text-xs text-ink/40 mb-4">
+  <a href="{{ url_for('admin_products') }}" class="hover:text-primary-600">Produk</a> /
+  {{ 'Edit' if product else 'Tambah' }}
+</div>
+
+<form method="post" enctype="multipart/form-data"
+      class="bg-white rounded-2xl border border-primary-100 p-6 max-w-2xl space-y-5">
+  <div>
+    <label class="text-sm font-medium">Nama Produk</label>
+    <input type="text" name="name" required value="{{ product.name if product else '' }}"
+           class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="text-sm font-medium">Merek</label>
+      <select name="brand_id" required class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+        {% for b in brands %}
+          <option value="{{ b.id }}" {{ 'selected' if product and product.brand_id==b.id }}>{{ b.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="text-sm font-medium">Kategori</label>
+      <select name="category_id" required class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+        {% for c in categories %}
+          <option value="{{ c.id }}" {{ 'selected' if product and product.category_id==c.id }}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4">
+    <div>
+      <label class="text-sm font-medium">Harga (Rp)</label>
+      <input type="number" name="price" required min="0" value="{{ product.price if product else '' }}"
+             class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+    </div>
+    <div>
+      <label class="text-sm font-medium">Stok</label>
+      <input type="number" name="stock" min="0" value="{{ product.stock if product else 0 }}"
+             class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+    </div>
+    <div>
+      <label class="text-sm font-medium">Isi / Volume</label>
+      <input type="text" name="volume" placeholder="20 ml" value="{{ product.volume if product else '' }}"
+             class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+    </div>
+  </div>
+
+  <div>
+    <label class="text-sm font-medium">Deskripsi</label>
+    <textarea name="description" rows="4"
+              class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">{{ product.description if product else '' }}</textarea>
+  </div>
+  <div>
+  <label class="text-sm font-medium">Gambar Produk</label>
+
+  {% if product and product.image %}
+    <div class="mt-2 mb-3">
+      <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+           class="w-32 h-32 object-cover rounded-lg border border-primary-100">
+    </div>
+  {% endif %}
+
+  <input
+      type="file"
+      name="image"
+      accept="image/*"
+      class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm">
+</div>
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" name="is_new" class="accent-primary-600" {{ 'checked' if product and product.is_new }}>
+    Tandai sebagai produk baru
+  </label>
+
+  <div class="flex gap-3 pt-2">
+    <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg px-6 py-2.5">
+      Simpan
+    </button>
+    <a href="{{ url_for('admin_products') }}" class="border border-primary-100 text-ink/60 text-sm font-medium rounded-lg px-6 py-2.5 hover:bg-primary-50">
+      Batal
+    </a>
+  </div>
+</form>
+{% endblock %}

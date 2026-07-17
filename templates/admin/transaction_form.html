@@ -1,0 +1,232 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Transaksi Baru{% endblock %}
+{% block page_title %}Transaksi Baru{% endblock %}
+
+{% block admin_content %}
+
+<div class="text-xs text-ink/40 mb-4">
+    <a href="{{ url_for('admin_transactions') }}">Transaksi</a> /
+    Tambah
+</div>
+
+<form method="post"
+      class="bg-white rounded-2xl border border-primary-100 p-6 max-w-3xl space-y-5">
+
+    <!-- Customer -->
+    <div>
+        <label class="text-sm font-medium">Nama Customer</label>
+
+        <input
+            type="text"
+            name="customer_name"
+            placeholder="Umum"
+            class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2">
+    </div>
+
+    <!-- Produk -->
+    <div>
+
+        <div class="flex justify-between items-center mb-3">
+            <label class="text-sm font-medium">Produk</label>
+
+            <button
+                type="button"
+                onclick="addRow()"
+                class="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700">
+
+                + Tambah Produk
+
+            </button>
+
+        </div>
+
+        <div id="product-list">
+
+            <div class="product-row grid grid-cols-12 gap-3 mb-3">
+
+                <div class="col-span-8">
+
+                    <select
+                        name="product_id[]"
+                        class="product-select w-full"
+                        required>
+
+                        <option value="">Cari Produk...</option>
+
+                        {% for p in products %}
+                        <option value="{{ p.id }}">
+                            {{ p.name }} | Stok {{ p.stock }} | {{ p.price|rupiah }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-span-3">
+
+                    <input
+                        type="number"
+                        name="qty[]"
+                        min="1"
+                        value="1"
+                        required
+                        class="w-full border border-primary-100 rounded-lg px-3 py-2">
+
+                </div>
+
+                <div class="col-span-1">
+
+                    <button
+                        type="button"
+                        onclick="removeRow(this)"
+                        class="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-2">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Metode -->
+    <div>
+
+        <label class="text-sm font-medium">
+            Metode Pembayaran
+        </label>
+
+        <select
+            name="payment_method"
+            class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2">
+
+            <option value="Cash">Cash</option>
+            <option value="Transfer">Transfer</option>
+            <option value="QRIS">QRIS</option>
+
+        </select>
+
+    </div>
+
+    <button
+        type="submit"
+        class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-6 py-2">
+
+        Simpan Transaksi
+
+    </button>
+
+</form>
+
+<!-- TEMPLATE BARIS BARU -->
+<template id="row-template">
+
+<div class="product-row grid grid-cols-12 gap-3 mb-3">
+
+    <div class="col-span-8">
+
+        <select
+            name="product_id[]"
+            class="product-select w-full"
+            required>
+
+            <option value="">Cari Produk...</option>
+
+            {% for p in products %}
+            <option value="{{ p.id }}">
+                {{ p.name }} | Stok {{ p.stock }} | {{ p.price|rupiah }}
+            </option>
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="col-span-3">
+
+        <input
+            type="number"
+            name="qty[]"
+            min="1"
+            value="1"
+            required
+            class="w-full border border-primary-100 rounded-lg px-3 py-2">
+
+    </div>
+
+    <div class="col-span-1">
+
+        <button
+            type="button"
+            onclick="removeRow(this)"
+            class="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg py-2">
+
+            ×
+
+        </button>
+
+    </div>
+
+</div>
+
+</template>
+
+<script>
+
+function initSelect(select){
+
+    new TomSelect(select,{
+        create:false,
+        placeholder:"Cari Produk..."
+    });
+
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    document.querySelectorAll(".product-select").forEach(function(select){
+
+        initSelect(select);
+
+    });
+
+});
+
+function addRow(){
+
+    const template = document.getElementById("row-template");
+
+    const clone = template.content.cloneNode(true);
+
+    document.getElementById("product-list").appendChild(clone);
+
+    const selects = document.querySelectorAll(".product-select");
+
+    initSelect(selects[selects.length-1]);
+
+}
+
+function removeRow(btn){
+
+    const rows = document.querySelectorAll(".product-row");
+
+    if(rows.length==1){
+
+        alert("Minimal satu produk.");
+
+        return;
+
+    }
+
+    btn.closest(".product-row").remove();
+
+}
+
+</script>
+
+{% endblock %}

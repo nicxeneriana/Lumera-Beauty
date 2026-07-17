@@ -1,0 +1,185 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Detail Transaksi — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Detail Transaksi{% endblock %}
+
+{% block admin_content %}
+
+<div class="text-xs text-ink/40 mb-5">
+    <a href="{{ url_for('admin_transactions') }}" class="hover:text-primary-600">
+        Transaksi
+    </a>
+    /
+    {{ transaction.invoice }}
+</div>
+
+<div class="grid md:grid-cols-3 gap-6">
+
+    <!-- Informasi Transaksi -->
+
+    <div class="md:col-span-1">
+
+        <div class="bg-white rounded-2xl border border-primary-100 p-5">
+
+            <h3 class="font-semibold text-lg mb-4">
+                Informasi Transaksi
+            </h3>
+
+            <div class="space-y-3 text-sm">
+
+                <div>
+                    <div class="text-ink/50">Invoice</div>
+                    <div class="font-medium">
+                        {{ transaction.invoice }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-ink/50">Tanggal</div>
+                    <div class="font-medium">
+                        {{ transaction.created_at.strftime('%d %B %Y %H:%M') }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-ink/50">Customer</div>
+                    <div class="font-medium">
+                        {{ transaction.customer_name or '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-ink/50">Metode Pembayaran</div>
+                    <div class="font-medium">
+                        {{ transaction.payment_method }}
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t">
+
+                    <div class="text-ink/50">
+                        Total Pembayaran
+                    </div>
+
+                    <div class="text-2xl font-bold text-primary-600 mt-1">
+                        {{ transaction.total|rupiah }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Detail Produk -->
+
+    <div class="md:col-span-2">
+
+        <div class="bg-white rounded-2xl border border-primary-100 overflow-hidden">
+
+            <div class="px-5 py-4 border-b border-primary-100 font-semibold">
+                Produk Dibeli
+            </div>
+
+            <table class="w-full text-sm">
+
+                <thead class="bg-primary-50 text-xs uppercase text-ink/50">
+
+                    <tr>
+                        <th class="text-left px-5 py-3">Produk</th>
+                        <th class="text-center px-5 py-3">Qty</th>
+                        <th class="text-right px-5 py-3">Harga</th>
+                        <th class="text-right px-5 py-3">Subtotal</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in items %}
+
+                    <tr class="border-t border-primary-50">
+
+                        <td class="px-5 py-4">
+                            {{ item.product_name }}
+                        </td>
+
+                        <td class="text-center px-5 py-4">
+                            {{ item.qty }}
+                        </td>
+
+                        <td class="text-right px-5 py-4">
+                            {{ item.price|rupiah }}
+                        </td>
+
+                        <td class="text-right px-5 py-4 font-semibold text-primary-600">
+                            {{ item.subtotal|rupiah }}
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+                <tfoot>
+
+                    <tr class="border-t bg-primary-50">
+
+                        <td colspan="3"
+                            class="text-right px-5 py-4 font-semibold">
+
+                            Total
+
+                        </td>
+
+                        <td class="text-right px-5 py-4 font-bold text-primary-700">
+
+                            {{ transaction.total|rupiah }}
+
+                        </td>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+<div class="mt-5 flex gap-3 items-center">
+
+    <a href="{{ url_for('admin_transactions') }}"
+       class="px-5 py-2.5 rounded-lg border border-primary-100 hover:bg-primary-50">
+
+        Kembali
+
+    </a>
+
+
+    <form action="{{ url_for('admin_transaction_delete', transaction_id=transaction.id) }}"
+          method="POST"
+          onsubmit="return confirm('Yakin ingin menghapus transaksi ini?');">
+
+        <button type="submit"
+                class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white">
+
+            Hapus Transaksi
+
+        </button>
+
+    </form>
+
+
+    <button onclick="window.print()"
+            class="px-5 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white">
+
+        Cetak Invoice
+
+    </button>
+
+</div>
+
+{% endblock %}

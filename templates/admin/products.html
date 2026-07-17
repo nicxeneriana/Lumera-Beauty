@@ -1,0 +1,64 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Produk — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Produk{% endblock %}
+
+{% block admin_content %}
+<div class="text-xs text-ink/40 mb-4">Dashboard / Produk</div>
+
+<div class="flex items-center justify-between mb-5 gap-4">
+  <form method="get" class="flex-1 max-w-sm">
+    <input type="text" name="q" value="{{ q }}" placeholder="Cari produk..."
+           class="w-full border border-primary-100 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary-300">
+  </form>
+  <a href="{{ url_for('admin_product_add') }}"
+     class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg px-4 py-2.5 flex items-center gap-2 shrink-0">
+    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    Tambah Produk
+  </a>
+</div>
+
+<div class="bg-white rounded-2xl border border-primary-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-primary-50/60 text-ink/50 text-xs uppercase">
+      <tr>
+        <th class="text-left px-5 py-3">No</th>
+        <th class="text-left px-5 py-3">Nama Produk</th>
+        <th class="text-left px-5 py-3">Merek</th>
+        <th class="text-left px-5 py-3">Kategori</th>
+        <th class="text-left px-5 py-3">Harga</th>
+        <th class="text-left px-5 py-3">Stok</th>
+        <th class="text-left px-5 py-3">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+        <tr class="border-t border-primary-50">
+          <td class="px-5 py-3 text-ink/50">{{ loop.index }}</td>
+          <td class="px-5 py-3 font-medium">{{ p.name }}</td>
+          <td class="px-5 py-3 text-ink/60">{{ p.brand_name }}</td>
+          <td class="px-5 py-3 text-ink/60">{{ p.category_name }}</td>
+          <td class="px-5 py-3 text-ink/60">{{ p.price|rupiah }}</td>
+          <td class="px-5 py-3">
+            <span class="{{ 'text-emerald-600' if p.stock > 0 else 'text-red-500' }} font-medium">{{ p.stock }}</span>
+          </td>
+          <td class="px-5 py-3">
+            <div class="flex items-center gap-3">
+              <a href="{{ url_for('admin_product_edit', product_id=p.id) }}" class="text-primary-600 hover:text-primary-700">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </a>
+              <form method="post" action="{{ url_for('admin_product_delete', product_id=p.id) }}"
+                    onsubmit="return confirm('Hapus produk {{ p.name }}?');">
+                <button type="submit" class="text-red-500 hover:text-red-600">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" class="px-5 py-10 text-center text-ink/40">Tidak ada produk ditemukan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

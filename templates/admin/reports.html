@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Laporan — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Laporan{% endblock %}
+
+{% block admin_content %}
+<div class="text-xs text-ink/40 mb-4">Dashboard / Laporan</div>
+
+<div class="bg-white rounded-2xl border border-primary-100 p-5 mb-5">
+  <div class="text-sm text-ink/50">Total Nilai Inventori</div>
+  <div class="text-2xl font-semibold text-primary-600 mt-1">{{ nilai_inventori|rupiah }}</div>
+  <div class="text-xs text-ink/40 mt-1">Total nilai seluruh stok produk saat ini (harga × stok)</div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <div class="bg-white rounded-2xl border border-primary-100 overflow-hidden">
+    <div class="px-5 py-3 font-medium text-sm border-b border-primary-50">Rekap per Kategori</div>
+    <table class="w-full text-sm">
+      <thead class="bg-primary-50/60 text-ink/50 text-xs uppercase">
+        <tr>
+          <th class="text-left px-5 py-3">Kategori</th>
+          <th class="text-left px-5 py-3">Produk</th>
+          <th class="text-left px-5 py-3">Total Stok</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in per_kategori %}
+          <tr class="border-t border-primary-50">
+            <td class="px-5 py-3 font-medium">{{ k.name }}</td>
+            <td class="px-5 py-3 text-ink/60">{{ k.total_produk }}</td>
+            <td class="px-5 py-3 text-ink/60">{{ k.total_stok }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-primary-100 overflow-hidden">
+    <div class="px-5 py-3 font-medium text-sm border-b border-primary-50">Rekap per Merek</div>
+    <table class="w-full text-sm">
+      <thead class="bg-primary-50/60 text-ink/50 text-xs uppercase">
+        <tr>
+          <th class="text-left px-5 py-3">Merek</th>
+          <th class="text-left px-5 py-3">Produk</th>
+          <th class="text-left px-5 py-3">Total Stok</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in per_brand %}
+          <tr class="border-t border-primary-50">
+            <td class="px-5 py-3 font-medium">{{ b.name }}</td>
+            <td class="px-5 py-3 text-ink/60">{{ b.total_produk }}</td>
+            <td class="px-5 py-3 text-ink/60">{{ b.total_stok }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

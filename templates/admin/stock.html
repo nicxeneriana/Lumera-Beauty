@@ -1,0 +1,68 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Stok — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Stok{% endblock %}
+
+{% block admin_content %}
+<div class="text-xs text-ink/40 mb-4">Dashboard / Stok</div>
+
+<div class="grid lg:grid-cols-[1fr_320px] gap-6">
+  <div>
+    <div class="flex items-center gap-1 mb-4 bg-primary-50/60 rounded-lg p-1 w-fit text-sm">
+      {% for t, label in [('masuk','Stok Masuk'), ('keluar','Stok Keluar'), ('riwayat','Riwayat')] %}
+        <a href="{{ url_for('admin_stock', tab=t) }}"
+           class="px-4 py-2 rounded-lg {{ 'bg-white text-primary-600 shadow-sm font-medium' if tab==t else 'text-ink/50 hover:text-ink' }}">
+          {{ label }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <div class="bg-white rounded-2xl border border-primary-100 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-primary-50/60 text-ink/50 text-xs uppercase">
+          <tr>
+            <th class="text-left px-5 py-3">Tanggal</th>
+            <th class="text-left px-5 py-3">Produk</th>
+            <th class="text-left px-5 py-3">Jumlah</th>
+            {% if tab == 'riwayat' %}<th class="text-left px-5 py-3">Tipe</th>{% endif %}
+            <th class="text-left px-5 py-3">Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr class="border-t border-primary-50">
+              <td class="px-5 py-3 text-ink/60">{{ r.created_at.strftime('%d/%m/%Y') }}</td>
+              <td class="px-5 py-3 font-medium">{{ r.product_name }}</td>
+              <td class="px-5 py-3 {{ 'text-emerald-600' if r.type=='masuk' else 'text-red-500' }} font-medium">
+                {{ '+' if r.type=='masuk' else '-' }}{{ r.quantity }}
+              </td>
+              {% if tab == 'riwayat' %}
+                <td class="px-5 py-3 text-ink/60 capitalize">{{ r.type }}</td>
+              {% endif %}
+              <td class="px-5 py-3 text-ink/50">{{ r.note or '-' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="px-5 py-10 text-center text-ink/40">Belum ada data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-primary-100 p-5 h-fit">
+    <div class="font-medium text-sm mb-3">Tambah Stok Masuk</div>
+    <form method="post" action="{{ url_for('admin_stock_add') }}" class="space-y-3">
+      <input type="hidden" name="type" value="masuk">
+      <select name="product_id" required class="w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+        {% for p in products %}<option value="{{ p.id }}">{{ p.name }} (stok: {{ p.stock }})</option>{% endfor %}
+      </select>
+      <input type="number" name="quantity" min="1" required placeholder="Jumlah"
+             class="w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+      <input type="text" name="note" placeholder="Keterangan (opsional)"
+             class="w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+      <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg py-2.5">
+        Catat Stok Masuk
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

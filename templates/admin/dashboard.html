@@ -1,0 +1,75 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Dashboard — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block admin_content %}
+<div class="mb-6">
+  <div class="text-lg font-medium">Selamat datang, {{ admin_name or 'Admin' }}!</div>
+  <div class="text-sm text-ink/50">Berikut ringkasan toko Anda hari ini.</div>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+  {% set cards = [
+    ('Total Produk', total_produk, 'Produk', 'bg-primary-50 text-primary-600'),
+    ('Stok Tersedia', stok_tersedia, 'Produk', 'bg-emerald-50 text-emerald-600'),
+    ('Stok Habis', stok_habis, 'Produk', 'bg-red-50 text-red-500'),
+    ('Total Transaksi', total_transaksi, 'Kali', 'bg-amber-50 text-amber-600'),
+  ] %}
+  {% for label, value, unit, color in cards %}
+    <div class="bg-white rounded-2xl border border-primary-100 p-5">
+      <div class="text-sm text-ink/50">{{ label }}</div>
+      <div class="text-2xl font-semibold mt-2">{{ value }}</div>
+      <div class="text-xs text-ink/40 mt-1">{{ unit }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="grid lg:grid-cols-3 gap-5">
+  <div class="lg:col-span-2 bg-white rounded-2xl border border-primary-100 p-6">
+    <div class="font-medium text-sm mb-4">Grafik Stok Keluar (7 Hari Terakhir)</div>
+    {% if chart_labels %}
+      <svg viewBox="0 0 600 220" class="w-full h-56">
+        {% set max_val = (chart_values|max) if chart_values else 1 %}
+        {% set max_val = max_val if max_val > 0 else 1 %}
+        {% set step = 560 / ((chart_labels|length - 1) if (chart_labels|length - 1) > 0 else 1) %}
+        <polyline
+          fill="none" stroke="#E0356F" stroke-width="3"
+          points="{% for v in chart_values %}{{ 20 + loop.index0 * step }},{{ 200 - (v / max_val * 170) }} {% endfor %}"
+        />
+        {% for v in chart_values %}
+          <circle cx="{{ 20 + loop.index0 * step }}" cy="{{ 200 - (v / max_val * 170) }}" r="4" fill="#E0356F"/>
+          <text x="{{ 20 + loop.index0 * step }}" y="216" font-size="10" fill="#999" text-anchor="middle">{{ chart_labels[loop.index0][5:] }}</text>
+        {% endfor %}
+      </svg>
+    {% else %}
+      <div class="text-sm text-ink/40 py-16 text-center">Belum ada data stok keluar.</div>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-2xl border border-primary-100 p-6">
+    <div class="font-medium text-sm mb-4">Produk Terlaris</div>
+    {% if terlaris %}
+      <ul class="space-y-3 text-sm">
+        {% for t in terlaris %}
+          <li class="flex items-center justify-between">
+            <span class="text-ink/70 line-clamp-1">{{ loop.index }}. {{ t.name }}</span>
+            <span class="text-ink/40 shrink-0 ml-2">{{ t.total_keluar }} terjual</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="text-sm text-ink/40">Belum ada data penjualan.</div>
+    {% endif %}
+
+    <div class="font-medium text-sm mt-6 mb-3">Stok Hampir Habis</div>
+    <ul class="space-y-2 text-sm">
+      {% for h in hampir_habis %}
+        <li class="flex items-center justify-between">
+          <span class="text-ink/70 line-clamp-1">{{ h.name }}</span>
+          <span class="text-primary-600 font-medium shrink-0 ml-2">{{ h.stock }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

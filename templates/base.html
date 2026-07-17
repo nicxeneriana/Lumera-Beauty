@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Luméra Beauty{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: { 50:'#FDF2F6',100:'#FCE7EE',200:'#F9D0E0',300:'#F3AFC7',
+                     400:'#E97CA0',500:'#E0356F',600:'#C81E5C',700:'#A5184B',
+                     900:'#5C0E2C' },
+          ink: '#221D22'
+        },
+        fontFamily: {
+          display: ['"Poppins"', 'sans-serif'],
+          body: ['"Inter"', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="font-body text-ink bg-white">
+
+<header class="border-b border-primary-100 sticky top-0 bg-white/95 backdrop-blur z-30">
+
+    <div class="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+
+        <!-- Kiri -->
+        <div class="flex items-center gap-16">
+
+            <a href="{{ url_for('index') }}" class="shrink-0">
+                <div class="font-display text-3xl font-bold text-primary-600">
+                    LUMÉRA
+                </div>
+                <div class="text-xs tracking-[0.35em] text-ink/60">
+                    BEAUTY
+                </div>
+            </a>
+
+            <nav class="flex items-center gap-8 text-base font-medium">
+
+                <a href="{{ url_for('index') }}"
+                   class="{{ 'text-primary-600 font-semibold' if request.endpoint=='index' else 'text-ink/70 hover:text-primary-600' }}">
+                    Beranda
+                </a>
+
+                <a href="{{ url_for('products') }}"
+                   class="{{ 'text-primary-600 font-semibold' if request.endpoint in ['products','product_detail'] else 'text-ink/70 hover:text-primary-600' }}">
+                    Produk
+                </a>
+
+            </nav>
+
+        </div>
+
+        <!-- Search -->
+        <form action="{{ url_for('products') }}" method="GET" class="w-full max-w-xl ml-12">
+
+            <div class="relative">
+
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ request.args.get('q','') }}"
+                    placeholder="Cari produk, merek, atau kategori..."
+                    class="w-full rounded-full border border-primary-200 px-6 py-3 pl-12">
+
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+                </svg>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</header>
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="max-w-7xl mx-auto px-6 pt-4 space-y-2">
+        {% for category, message in messages %}
+          <div class="rounded-lg px-4 py-3 text-sm {{ 'bg-red-50 text-red-600 border border-red-100' if category=='error' else 'bg-green-50 text-green-700 border border-green-100' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer id="kontak" class="mt-20 border-t border-primary-100 bg-primary-50/40">
+  <div class="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div>
+      <div class="font-display font-700 text-lg text-primary-600">LUMÉRA <span class="text-ink/50 text-xs align-middle">BEAUTY</span></div>
+      <p class="text-sm text-ink/60 mt-1">Temukan produk kecantikan favoritmu, cek stok &amp; harga secara real-time.</p>
+    </div>
+    <div class="text-sm text-ink/50">© 2026 Lumera Beauty. All rights reserved.</div>
+  </div>
+</footer>
+
+</body>
+</html>

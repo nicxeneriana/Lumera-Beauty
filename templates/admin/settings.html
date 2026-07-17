@@ -1,0 +1,28 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Pengaturan — Admin Luméra Beauty{% endblock %}
+{% block page_title %}Pengaturan{% endblock %}
+
+{% block admin_content %}
+<div class="text-xs text-ink/40 mb-4">Dashboard / Pengaturan</div>
+
+<form method="post" class="bg-white rounded-2xl border border-primary-100 p-6 max-w-lg space-y-5">
+  <div>
+    <label class="text-sm font-medium">Nama</label>
+    <input type="text" name="name" value="{{ user.name }}" required
+           class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+  </div>
+  <div>
+    <label class="text-sm font-medium">Email</label>
+    <input type="email" value="{{ user.email }}" disabled
+           class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm bg-primary-50/40 text-ink/50">
+  </div>
+  <div>
+    <label class="text-sm font-medium">Password Baru</label>
+    <input type="password" name="new_password" placeholder="Kosongkan jika tidak ingin mengubah"
+           class="mt-1 w-full border border-primary-100 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-primary-300">
+  </div>
+  <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg px-6 py-2.5">
+    Simpan Perubahan
+  </button>
+</form>
+{% endblock %}

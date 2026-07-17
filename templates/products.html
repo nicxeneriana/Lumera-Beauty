@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Produk — Luméra Beauty{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <div class="text-xs text-ink/40 mb-2">
+    <a href="{{ url_for('index') }}" class="hover:text-primary-600">Beranda</a> / Produk
+  </div>
+  <h1 class="font-display font-600 text-2xl mb-6">Produk</h1>
+
+  <div class="grid md:grid-cols-[240px_1fr] gap-8">
+    <!-- Filters -->
+    <aside class="space-y-6">
+      <form method="get" id="filter-form">
+        <input type="hidden" name="urutkan" value="{{ urutkan }}">
+
+        <div class="border border-primary-100 rounded-xl p-4">
+          <div class="font-medium text-sm mb-3">Kategori</div>
+          <div class="space-y-2 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer {{ 'text-primary-600 font-medium' if selected_category=='semua' }}">
+              <input type="radio" name="kategori" value="semua" class="accent-primary-600" onchange="document.getElementById('filter-form').submit()" {{ 'checked' if selected_category=='semua' }}>
+              Semua
+            </label>
+            {% for c in nav_categories %}
+              <label class="flex items-center gap-2 cursor-pointer {{ 'text-primary-600 font-medium' if selected_category==c.name }}">
+                <input type="radio" name="kategori" value="{{ c.name }}" class="accent-primary-600" onchange="document.getElementById('filter-form').submit()" {{ 'checked' if selected_category==c.name }}>
+                {{ c.name }}
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="border border-primary-100 rounded-xl p-4 mt-4">
+          <div class="font-medium text-sm mb-3">Merek</div>
+          <div class="space-y-2 text-sm">
+            {% for b in nav_brands %}
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="merek" value="{{ b.name }}" class="accent-primary-600" onchange="document.getElementById('filter-form').submit()" {{ 'checked' if b.name in selected_brands }}>
+                {{ b.name }}
+              </label>
+            {% endfor %}
+          </div>
+        </div>  
+      </form>
+    </aside>
+
+    <!-- Results -->
+    <div>
+      <div class="flex items-center justify-between mb-5">
+        <div class="text-sm text-ink/50">Menampilkan {{ (page-1)*page_size + 1 if total else 0 }}-{{ [(page)*page_size, total]|min }} dari {{ total }} produk</div>
+        <form method="get" class="flex items-center gap-2 text-sm">
+          <input type="hidden" name="kategori" value="{{ selected_category }}">
+          {% for b in selected_brands %}<input type="hidden" name="merek" value="{{ b }}">{% endfor %}
+          {% if harga_min %}<input type="hidden" name="harga_min" value="{{ harga_min }}">{% endif %}
+          {% if harga_max %}<input type="hidden" name="harga_max" value="{{ harga_max }}">{% endif %}
+          <label class="text-ink/50">Urutkan:</label>
+          <select name="urutkan" onchange="this.form.submit()" class="border border-primary-100 rounded-lg px-2 py-1.5 outline-none">
+            <option value="terbaru" {{ 'selected' if urutkan=='terbaru' }}>Terbaru</option>
+            <option value="harga_asc" {{ 'selected' if urutkan=='harga_asc' }}>Harga Terendah</option>
+            <option value="harga_desc" {{ 'selected' if urutkan=='harga_desc' }}>Harga Tertinggi</option>
+            <option value="nama" {{ 'selected' if urutkan=='nama' }}>Nama A-Z</option>
+          </select>
+        </form>
+      </div>
+
+      {% if products %}
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for p in products %}
+          <a href="{{ url_for('product_detail', product_id=p.id) }}" class="group block rounded-2xl border border-primary-100 overflow-hidden hover:shadow-lg transition">
+          <div class="p-3 relative">
+
+              {% if p.stock == 0 %}
+                  <div class="absolute inset-0 z-10 flex items-center justify-center">
+                      <span class="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                          Stok Habis
+                      </span>
+                  </div>
+
+              {% elif p.stock < 5 %}
+                  <div class="absolute top-3 left-3 z-10">
+                      <span class="bg-yellow-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                          Stok Hampir Habis
+                      </span>
+                  </div>
+              {% endif %}
+              {% if p.image %}
+                  <div class="aspect-square bg-white rounded-xl border border-primary-100 flex items-center justify-center overflow-hidden">
+                      <img src="{{ url_for('static', filename='uploads/' + p.image) }}"
+                          alt="{{ p.name }}"
+                          class="max-w-full max-h-full object-contain transition duration-300 group-hover:scale-105">
+                  </div>
+              {% else %}
+                  <div class="aspect-square bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                      Tidak ada gambar
+                  </div>
+              {% endif %}
+            </div>
+            <div class="px-4 pb-4">
+              <div class="text-xs text-ink/40">
+                  {{ p.brand_name }}
+              </div>
+
+              <div class="text-sm font-medium mt-0.5 line-clamp-2 group-hover:text-primary-600">
+                  {{ p.name }}
+              </div>
+
+              <div class="text-sm font-semibold text-primary-600 mt-1">
+                  {{ p.price|rupiah }}
+              </div>
+
+              <!-- Status Stock + Jumlah Stock -->
+              <div class="mt-2 flex items-center gap-2">
+
+                  {% if p.stock == 0 %}
+
+                      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">
+                          Stok Habis
+                      </span>
+
+                      <span class="text-xs text-ink/50">
+                          0 pcs
+                      </span>
+
+
+                  {% elif p.stock < 5 %}
+
+                      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-600">
+                          Stok Hampir Habis
+                      </span>
+
+                      <span class="text-xs text-ink/50">
+                          {{ p.stock }} pcs
+                      </span>
+
+
+                  {% else %}
+
+                      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-600">
+                          Stok Tersedia
+                      </span>
+
+                      <span class="text-xs text-ink/50">
+                          {{ p.stock }} pcs
+                      </span>
+
+                  {% endif %}
+
+              </div>
+
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if total_pages > 1 %}
+      <div class="flex items-center gap-2 justify-center mt-10 text-sm">
+        {% for pnum in range(1, total_pages + 1) %}
+          <a href="{{ url_for('products', kategori=selected_category, merek=selected_brands, harga_min=harga_min, harga_max=harga_max, urutkan=urutkan, page=pnum) }}"
+             class="w-8 h-8 flex items-center justify-center rounded-full {{ 'bg-primary-600 text-white' if pnum==page else 'border border-primary-100 text-ink/60 hover:bg-primary-50' }}">
+            {{ pnum }}
+          </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% else %}
+        <div class="text-center py-20 text-ink/40 text-sm">Tidak ada produk yang cocok dengan filter ini.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
